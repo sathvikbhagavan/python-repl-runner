@@ -1,0 +1,57 @@
+{
+  "name": "python-repl-runner",
+  "displayName": "Python REPL Runner",
+  "description": "Run selected Python code in the REPL using Cmd + Enter.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.98.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": ["onCommand:python-repl-runner.runSelection"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "python-repl-runner.runSelection",
+        "title": "Run Selection in Python REPL"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "python-repl-runner.runSelection",
+        "key": "cmd+enter",
+        "when": "editorTextFocus"
+      }
+    ],
+    "configuration": {
+      "properties": {
+        "python-repl-runner.interpreterPath": {
+          "type": "string",
+          "default": "python",
+          "description": "Path to the Python interpreter used for the REPL."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.98.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@typescript-eslint/eslint-plugin": "^8.25.0",
+    "@typescript-eslint/parser": "^8.25.0",
+    "eslint": "^9.21.0",
+    "typescript": "^5.7.3",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1"
+  }
+}
