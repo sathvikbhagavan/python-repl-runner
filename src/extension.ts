@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
+import * as os from 'os';
 
 export function activate(context: vscode.ExtensionContext) {
     vscode.window.showInformationMessage("Python REPL Runner is now active!");
@@ -22,6 +24,21 @@ export function activate(context: vscode.ExtensionContext) {
         const selection = editor.selection;
         let codeLines: string[] = [];
 
+        // Get current working directory from file path
+        const fileUri = document.uri;
+        let dirPath: string;
+
+        if (fileUri.scheme === 'file') {
+            dirPath = path.dirname(fileUri.fsPath);
+        } else {
+            // Handle untitled files and virtual workspaces
+            const workspaceFolder = vscode.workspace.getWorkspaceFolder(fileUri);
+            dirPath = workspaceFolder?.uri.fsPath || os.homedir();
+            if (!workspaceFolder) {
+                vscode.window.showWarningMessage('Using home directory as working directory');
+            }
+        }
+
         if (selection.isEmpty) {
             const currentLine = document.lineAt(selection.active.line);
             codeLines = getCodeBlock(document, selection.active.line).split('\n');
@@ -41,10 +58,12 @@ export function activate(context: vscode.ExtensionContext) {
 
         let terminal = vscode.window.terminals.find(t => t.name === "Python REPL");
         if (!terminal) {
+            // Create terminal with proper working directory
             terminal = vscode.window.createTerminal({ 
                 name: "Python REPL", 
                 shellPath: pythonPath,
-                shellArgs: ['-i']
+                shellArgs: ['-i'],
+                cwd: dirPath
             });
             terminal.show();
         }
@@ -136,7 +155,7 @@ function isBlockStart(lineText: string): boolean {
         trimmed.startsWith('while ') ||
         trimmed.startsWith('with ') ||
         trimmed.startsWith('try:') ||
-        trimmed.endsWith(':')
+        (trimmed.endsWith(':') && !trimmed.startsWith('#')) // Exclude comments
     );
 }
 
