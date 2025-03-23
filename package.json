@@ -1,6 +1,7 @@
 {
   "name": "python-repl-runner",
   "displayName": "Python REPL Runner",
+  "publisher": "sathvikbhagavan",
   "description": "Run selected Python code in the REPL using Cmd + Enter.",
   "version": "0.0.1",
   "engines": {
