@@ -70,7 +70,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         // Send raw lines with preserved indentation
         for (const line of codeLines) {
-            terminal.sendText(line.trimStart(), true);
+            terminal.sendText(line, true);
             await new Promise(resolve => setTimeout(resolve, 20));
         }
         
