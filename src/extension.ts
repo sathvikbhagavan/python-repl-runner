@@ -70,6 +70,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         // Send raw lines with preserved indentation
         for (const line of codeLines) {
+            if(line.trim() == '') continue;
             terminal.sendText(line, true);
             await new Promise(resolve => setTimeout(resolve, 20));
         }
@@ -119,8 +120,11 @@ function getCodeBlock(document: vscode.TextDocument, lineNumber: number): string
         while (end < document.lineCount - 1) {
             const nextLine = document.lineAt(end + 1);
             const nextIndent = getIndentationLevel(nextLine.text);
-            
-            if (nextIndent <= blockIndent && !nextLine.text.startsWith(' ')) break;
+
+            // Continue through blank lines but stop at dedent
+            if (!nextLine.isEmptyOrWhitespace && nextIndent <= blockIndent) {
+                break;
+            }
             end++;
         }
     } else {
@@ -131,7 +135,11 @@ function getCodeBlock(document: vscode.TextDocument, lineNumber: number): string
             while (end < document.lineCount - 1) {
                 const nextLine = document.lineAt(end + 1);
                 const nextIndent = getIndentationLevel(nextLine.text);
-                if (nextIndent <= blockIndent && !nextLine.text.startsWith(' ')) break;
+
+                // Include blank lines but stop at dedent
+                if (!nextLine.isEmptyOrWhitespace && nextIndent <= blockIndent) {
+                    break;
+                }
                 end++;
             }
         } else {
