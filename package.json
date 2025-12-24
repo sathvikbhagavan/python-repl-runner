@@ -38,7 +38,7 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
+    "compile": "tsc -p ./ && tsc -p ./tsconfig.test.json && rm -rf out/test/src && mv out/test/test/extension.test.js out/test/ 2>/dev/null || true && mv out/test/test/extension.test.js.map out/test/ 2>/dev/null || true && rm -rf out/test/test",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",

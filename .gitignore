@@ -3,3 +3,9 @@ dist
 node_modules
 .vscode-test/
 *.vsix
+
+# Compiled JavaScript and source maps (should only be in out/)
+src/**/*.js
+src/**/*.map
+test/**/*.js
+test/**/*.map

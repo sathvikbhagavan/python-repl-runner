@@ -70,7 +70,9 @@ export function activate(context: vscode.ExtensionContext) {
 
         // Send raw lines with preserved indentation
         for (const line of codeLines) {
-            if(line.trim() == '') continue;
+            if (line.trim() === '') {
+                continue;
+            }
             terminal.sendText(line, true);
             await new Promise(resolve => setTimeout(resolve, 20));
         }
@@ -84,7 +86,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 }
 
-function getCodeBlock(document: vscode.TextDocument, lineNumber: number): string {
+export function getCodeBlock(document: vscode.TextDocument, lineNumber: number): string {
     const initialLine = document.lineAt(lineNumber);
     const initialIndent = getIndentationLevel(initialLine.text);
 
@@ -106,16 +108,19 @@ function getCodeBlock(document: vscode.TextDocument, lineNumber: number): string
         }
 
         // Verify we found a valid block starter
-        if (start >= 0) {
-            const startLine = document.lineAt(start);
-            if (!isBlockStart(startLine.text)) {
-                // Fallback to current line's immediate block
-                return document.lineAt(lineNumber).text;
-            }
+        if (start < 0 || start >= document.lineCount) {
+            // Fallback to current line if we couldn't find a valid block starter
+            return document.lineAt(lineNumber).text;
+        }
+
+        const startLine = document.lineAt(start);
+        if (!isBlockStart(startLine.text)) {
+            // Fallback to current line's immediate block
+            return document.lineAt(lineNumber).text;
         }
 
         // Find full block ending
-        const blockIndent = getIndentationLevel(document.lineAt(start).text);
+        const blockIndent = getIndentationLevel(startLine.text);
         end = start;
         while (end < document.lineCount - 1) {
             const nextLine = document.lineAt(end + 1);
@@ -152,7 +157,7 @@ function getCodeBlock(document: vscode.TextDocument, lineNumber: number): string
     return document.getText(range);
 }
 
-function isBlockStart(lineText: string): boolean {
+export function isBlockStart(lineText: string): boolean {
     const trimmed = lineText.trim();
     return (
         trimmed.startsWith('def ') ||
@@ -167,7 +172,7 @@ function isBlockStart(lineText: string): boolean {
     );
 }
 
-function getIndentationLevel(line: string): number {
+export function getIndentationLevel(line: string): number {
     return line.match(/^ */)?.[0].length || 0;
 }
 

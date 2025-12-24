@@ -1,0 +1,22 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"rootDir": ".",
+		"outDir": "out/test",
+		"types": ["mocha", "node"],
+		"moduleResolution": "Node16",
+		"baseUrl": ".",
+		"paths": {
+			"../out/extension.js": ["./src/extension.ts"]
+		}
+	},
+	"include": [
+		"test/**/*",
+		"src/**/*"
+	],
+	"exclude": [
+		"node_modules",
+		"out"
+	]
+}
+
